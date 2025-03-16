@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class DaftarBarangController extends Controller
 {
@@ -52,8 +52,10 @@ class DaftarBarangController extends Controller
         $data['nomor'] = 'BRG' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
 
         if ($request->hasFile('foto')) {
-            $path = $request->file('foto')->store('barang_foto', 'public');
-            $data['foto'] = $path;
+            $uploadedFile = Cloudinary::upload($request->file('foto')->getRealPath(), [
+                'folder' => 'barang_foto'
+            ])->getSecurePath();
+            $data['foto'] = $uploadedFile;
         }
 
         $barang = Barang::create($data);
