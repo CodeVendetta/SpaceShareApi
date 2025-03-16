@@ -134,4 +134,20 @@ class PeminjamanRuangController extends Controller
             'data' => $history,
         ]);
     }
+
+    public function historyPeminjamanRuangReturned()
+    {
+        $userId = Auth::id();
+
+        $history = PinjamRuang::where('user_id', $userId)
+            ->where('status', 5)
+            ->with(['ruang', 'statusPeminjaman'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'message' => 'Riwayat ruang yang telah dikembalikan berhasil diambil',
+            'data' => $history,
+        ]);
+    }
 }

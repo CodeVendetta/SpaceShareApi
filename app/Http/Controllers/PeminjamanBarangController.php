@@ -135,4 +135,20 @@ class PeminjamanBarangController extends Controller
             'data' => $history,
         ]);
     }
+
+    public function historyPeminjamanBarangReturned()
+    {
+        $userId = Auth::id();
+
+        $history = PinjamBarang::where('user_id', $userId)
+            ->where('status', 5)
+            ->with(['barang', 'statusPeminjaman'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'message' => 'Riwayat barang yang telah dikembalikan berhasil diambil',
+            'data' => $history,
+        ]);
+    }
 }
