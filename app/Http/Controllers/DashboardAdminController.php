@@ -11,7 +11,7 @@ class DashboardAdminController extends Controller
         $user = User::get();
 
         return response()->json([
-            'message' => 'Daftar barang berhasil diambil',
+            'message' => 'Data berhasil diambil',
             'data' => $user
         ]);
     }

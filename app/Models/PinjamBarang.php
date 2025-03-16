@@ -11,6 +11,8 @@ class PinjamBarang extends Model
 
     protected $fillable = ['barang_id', 'user_id', 'admin_id', 'tgl_mulai', 'tgl_selesai', 'qty', 'status', 'is_returned'];
 
+    protected $table = 'pinjam_barang';
+
     public function barang()
     {
         return $this->belongsTo(Barang::class);

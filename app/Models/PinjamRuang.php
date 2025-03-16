@@ -11,6 +11,8 @@ class PinjamRuang extends Model
 
     protected $fillable = ['ruang_id', 'user_id', 'admin_id', 'tgl_mulai', 'tgl_selesai', 'status', 'is_returned'];
 
+    protected $table = 'pinjam_ruang';
+
     public function ruang()
     {
         return $this->belongsTo(Ruang::class);
