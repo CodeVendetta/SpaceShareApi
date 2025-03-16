@@ -29,8 +29,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/ruang', [DaftarRuangController::class, 'index']);
         Route::get('/dashboard', [DashboardAdminController::class, 'index']);
         Route::get('/barang/{id}', [DaftarBarangController::class, 'getBarangById']);
-        Route::get('/barang/store', [DaftarBarangController::class, 'store']);
-        Route::get('/ruang/store', [DaftarRuangController::class, 'store']);
+        Route::post('/barang/store', [DaftarBarangController::class, 'store']);
+        Route::post('/ruang/store', [DaftarRuangController::class, 'store']);
         Route::get('/ruang/{id}', [DaftarRuangController::class, 'getRuangById']);
         Route::put('/approve-return-ruang/{id}', [PeminjamanRuangController::class, 'approveRejectReturnRuang']);
         Route::put('/approve-return-barang/{id}', [PeminjamanBarangController::class, 'approveRejectReturnBarang']);
