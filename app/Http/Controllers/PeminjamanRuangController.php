@@ -12,32 +12,40 @@ class PeminjamanRuangController extends Controller
 {
     public function create(Request $request)
     {
-        $request->validate([
-            'ruang_id' => 'required|exists:ruang,id',
-            'tgl_mulai' => 'required|date|after_or_equal:today',
-            'tgl_selesai' => 'required|date|after:tgl_mulai',
-        ]);
+        try {
+            $request->validate([
+                'ruang_id' => 'required|exists:ruang,id',
+                'tgl_mulai' => 'required|date|after_or_equal:today',
+                'tgl_selesai' => 'required|date|after:tgl_mulai',
+            ]);
 
-        $ruang = Ruang::findOrFail($request->ruang_id);
+            $ruang = Ruang::findOrFail($request->ruang_id);
 
-        if ($ruang->status != 1) {
-            return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 400);
+            if ($ruang->status != 1) {
+                return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 400);
+            }
+
+            $peminjaman = PinjamRuang::create([
+                'ruang_id' => $request->ruang_id,
+                'user_id' => Auth::id(),
+                'admin_id' => 1,
+                'tgl_mulai' => $request->tgl_mulai,
+                'tgl_selesai' => $request->tgl_selesai,
+                'qty' => $request->qty,
+                'status' => 1,
+                'is_returned' => false,
+            ]);
+
+            return response()->json([
+                'message' => 'Peminjaman ruang berhasil diajukan, menunggu persetujuan admin',
+                'data' => $peminjaman,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Terjadi kesalahan',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $peminjaman = PinjamRuang::create([
-            'ruang_id' => $request->ruang_id,
-            'user_id' => Auth::id(),
-            'admin_id' => 1,
-            'tgl_mulai' => $request->tgl_mulai,
-            'tgl_selesai' => $request->tgl_selesai,
-            'status' => 1,
-            'is_returned' => false,
-        ]);
-
-        return response()->json([
-            'message' => 'Peminjaman ruang berhasil diajukan, menunggu persetujuan admin',
-            'data' => $peminjaman,
-        ], 201);
     }
 
     public function requestReturnRuang(Request $request, $id)
