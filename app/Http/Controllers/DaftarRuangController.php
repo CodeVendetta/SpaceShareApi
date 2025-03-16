@@ -20,7 +20,7 @@ class DaftarRuangController extends Controller
 
     public function getRuangById($id)
     {
-        $ruangbyid = Ruang::get()->where('id',$id)->first();
+        $ruangbyid = Ruang::get()->where('id', $id)->first();
         return response()->json([
             'message' => 'Detail berhasil diambil',
             'data' => $ruangbyid
@@ -51,10 +51,15 @@ class DaftarRuangController extends Controller
         $data['nomor'] = 'RG' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
 
         if ($request->hasFile('foto')) {
-            $uploadedFile = Cloudinary::upload($request->file('foto')->getRealPath(), [
-                'folder' => 'ruang_foto'
-            ])->getSecurePath();
-            $data['foto'] = $uploadedFile;
+            try {
+                $uploadedFile = Cloudinary::upload($request->file('foto')->getRealPath(), [
+                    'folder' => 'ruang_foto'
+                ])->getSecurePath();
+
+                $data['foto'] = $uploadedFile;
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Gagal upload ke Cloudinary', 'message' => $e->getMessage()], 500);
+            }
         }
 
         $ruang = Ruang::create($data);
