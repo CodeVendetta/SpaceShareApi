@@ -50,16 +50,16 @@ class DaftarBarangController extends Controller
         }
 
         $data['nomor'] = 'BRG' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
-
         if ($request->hasFile('foto')) {
             try {
                 $uploadedFile = Cloudinary::upload($request->file('foto')->getRealPath(), [
                     'folder' => 'barang_foto'
-                ])->getSecurePath();
+                    ])->getSecurePath();
 
-                $data['foto'] = $uploadedFile;
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Gagal upload ke Cloudinary', 'message' => $e->getMessage()], 500);
+                    $data['foto'] = $uploadedFile;
+                } catch (\Exception $e) {
+                    dd(env('CLOUDINARY_URL'));
+                    return response()->json(['error' => 'Gagal upload ke Cloudinary', 'message' => $e->getMessage()], 500);
             }
         }
 
