@@ -54,12 +54,11 @@ class DaftarBarangController extends Controller
             try {
                 $uploadedFile = Cloudinary::upload($request->file('foto')->getRealPath(), [
                     'folder' => 'barang_foto'
-                    ])->getSecurePath();
+                ])->getSecurePath();
 
-                    $data['foto'] = $uploadedFile;
-                } catch (\Exception $e) {
-                    dd(env('CLOUDINARY_URL'));
-                    return response()->json(['error' => 'Gagal upload ke Cloudinary', 'message' => $e->getMessage()], 500);
+                $data['foto'] = $uploadedFile;
+            } catch (\Exception $e) {
+                return dd(env('CLOUDINARY_URL'));
             }
         }
 
