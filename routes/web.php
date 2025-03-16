@@ -16,10 +16,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/test', function () {
-    return response()->json([
-        'env' => env('CLOUDINARY_URL'),
-        'config' => config('filesystems.disks.cloudinary.url')
-    ]);
-});
