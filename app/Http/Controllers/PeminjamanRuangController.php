@@ -27,7 +27,7 @@ class PeminjamanRuangController extends Controller
         $peminjaman = PinjamRuang::create([
             'ruang_id' => $request->ruang_id,
             'user_id' => Auth::id(),
-            'admin_id' => null,
+            'admin_id' => 1,
             'tgl_mulai' => $request->tgl_mulai,
             'tgl_selesai' => $request->tgl_selesai,
             'status' => 1,

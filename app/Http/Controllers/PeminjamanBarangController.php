@@ -27,7 +27,7 @@ class PeminjamanBarangController extends Controller
         $peminjaman = PinjamBarang::create([
             'barang_id' => $request->barang_id,
             'user_id' => Auth::id(),
-            'admin_id' => null,
+            'admin_id' => 1,
             'tgl_mulai' => $request->tgl_mulai,
             'tgl_selesai' => $request->tgl_selesai,
             'qty' => $request->qty,
