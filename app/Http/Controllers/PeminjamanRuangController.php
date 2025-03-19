@@ -22,7 +22,7 @@ class PeminjamanRuangController extends Controller
             $ruang = Ruang::findOrFail($request->ruang_id);
 
             if ($ruang->status != 1) {
-                return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 400);
+                return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 404);
             }
 
             $peminjaman = PinjamRuang::create([
