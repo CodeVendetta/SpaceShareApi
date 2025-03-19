@@ -12,15 +12,13 @@ class PeminjamanBarangController extends Controller
 {
     public function create(Request $request)
     {
+        DB::beginTransaction();
         try {
-            $request->validate([
-                'barang_id' => 'required|exists:barang,id',
-                'tgl_mulai' => 'required|date|after_or_equal:today',
-                'tgl_selesai' => 'required|date|after:tgl_mulai',
-                'qty' => 'required|integer|min:1',
-            ]);
-
             $barang = Barang::findOrFail($request->barang_id);
+
+            if ($barang->stok < $request->qty) {
+                return response()->json(['message' => 'Stok tidak mencukupi'], 400);
+            }
 
             if ($barang->status != 1) {
                 return response()->json(['message' => 'Barang tidak tersedia untuk dipinjam'], 400);
@@ -37,11 +35,22 @@ class PeminjamanBarangController extends Controller
                 'is_returned' => false,
             ]);
 
+            $barang->stok -= $request->qty;
+
+            if ($barang->stok == 0) {
+                $barang->status = 3;
+            }
+
+            $barang->save();
+
+            DB::commit();
+
             return response()->json([
                 'message' => 'Peminjaman barang berhasil diajukan, menunggu persetujuan admin',
                 'data' => $peminjaman,
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'message' => 'Terjadi kesalahan',
                 'error' => $e->getMessage()
