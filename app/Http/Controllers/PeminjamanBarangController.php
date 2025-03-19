@@ -15,6 +15,12 @@ class PeminjamanBarangController extends Controller
     {
         DB::beginTransaction();
         try {
+            $request->validate([
+                'barang_id' => 'required|exists:barang,id',
+                'tgl_mulai' => 'required|date|after_or_equal:today',
+                'tgl_selesai' => 'required|date|after:tgl_mulai',
+            ]);
+
             $barang = Barang::findOrFail($request->barang_id);
 
             if ($barang->stok < $request->qty) {

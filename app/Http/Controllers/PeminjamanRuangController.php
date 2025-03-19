@@ -12,6 +12,7 @@ class PeminjamanRuangController extends Controller
 {
     public function create(Request $request)
     {
+        DB::beginTransaction();
         try {
             $request->validate([
                 'ruang_id' => 'required|exists:ruang,id',
@@ -21,8 +22,12 @@ class PeminjamanRuangController extends Controller
 
             $ruang = Ruang::findOrFail($request->ruang_id);
 
+            if ($ruang->stok < $request->qty) {
+                return response()->json(['message' => 'Stok tidak mencukupi'], 400);
+            }
+
             if ($ruang->status != 1) {
-                return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 404);
+                return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 400);
             }
 
             $peminjaman = PinjamRuang::create([
@@ -31,16 +36,27 @@ class PeminjamanRuangController extends Controller
                 'admin_id' => 1,
                 'tgl_mulai' => $request->tgl_mulai,
                 'tgl_selesai' => $request->tgl_selesai,
-                'qty' => $request->qty,
+                'qty' => 1,
                 'status' => 1,
                 'is_returned' => false,
             ]);
+
+            $ruang->stok -= $request->qty;
+
+            if ($ruang->stok == 0) {
+                $ruang->status = 3   ;
+            }
+
+            $ruang->save();
+
+            DB::commit();
 
             return response()->json([
                 'message' => 'Peminjaman ruang berhasil diajukan, menunggu persetujuan admin',
                 'data' => $peminjaman,
             ], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'message' => 'Terjadi kesalahan',
                 'error' => $e->getMessage()
@@ -76,23 +92,46 @@ class PeminjamanRuangController extends Controller
             'status' => 'required|integer|in:2,5',
         ]);
 
-        $peminjaman = PinjamRuang::where('id', $id)
-            ->where('status', 4)
-            ->first();
+        DB::beginTransaction();
+        try {
+            $peminjaman = PinjamRuang::where('id', $id)
+                ->where('status', 4)
+                ->first();
 
-        if (!$peminjaman) {
-            return response()->json(['message' => 'Pengembalian tidak ditemukan atau sudah diproses'], 404);
+            if (!$peminjaman) {
+                return response()->json(['message' => 'Pengembalian tidak ditemukan atau sudah diproses'], 404);
+            }
+
+            $ruang = Ruang::findOrFail($peminjaman->ruang_id);
+
+            if ($request->status == 5) {
+                $ruang->stok += $peminjaman->qty;
+
+                if ($ruang->status == 3) {
+                    $ruang->status = 1;
+                }
+
+                $ruang->save();
+            }
+
+            $peminjaman->update([
+                'status' => $request->status,
+                'is_returned' => $request->status == 5,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => $request->status == 5 ? 'Pengembalian ruang berhasil dikonfirmasi' : 'Pengembalian ruang ditolak',
+                'data' => $peminjaman,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Terjadi kesalahan',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $peminjaman->update([
-            'status' => $request->status,
-            'is_returned' => $request->status == 5,
-        ]);
-
-        return response()->json([
-            'message' => $request->status == 5 ? 'Pengembalian ruang berhasil dikonfirmasi' : 'Pengembalian ruang ditolak',
-            'data' => $peminjaman,
-        ]);
     }
 
     public function approveRejectPeminjamanRuang(Request $request, $id)
@@ -101,23 +140,46 @@ class PeminjamanRuangController extends Controller
             'status' => 'required|integer|in:2,3',
         ]);
 
-        $peminjaman = PinjamRuang::where('id', $id)
-            ->where('status', 1)
-            ->first();
+        DB::beginTransaction();
+        try {
+            $peminjaman = PinjamRuang::where('id', $id)
+                ->where('status', 1)
+                ->first();
 
-        if (!$peminjaman) {
-            return response()->json(['message' => 'Peminjaman tidak ditemukan atau sudah diproses'], 404);
+            if (!$peminjaman) {
+                return response()->json(['message' => 'Peminjaman tidak ditemukan atau sudah diproses'], 404);
+            }
+
+            $ruang = Ruang::findOrFail($peminjaman->ruang_id);
+
+            if ($request->status == 3) {
+                $ruang->stok += $peminjaman->qty;
+
+                if ($ruang->status == 3) {
+                    $ruang->status = 1;
+                }
+
+                $ruang->save();
+            }
+
+            $peminjaman->update([
+                'status' => $request->status,
+                'admin_id' => Auth::id(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => $request->status == 2 ? 'Peminjaman ruang disetujui' : 'Peminjaman ruang ditolak',
+                'data' => $peminjaman,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Terjadi kesalahan',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $peminjaman->update([
-            'status' => $request->status,
-            'admin_id' => Auth::id(),
-        ]);
-
-        return response()->json([
-            'message' => $request->status == 2 ? 'Peminjaman ruang disetujui' : 'Peminjaman ruang ditolak',
-            'data' => $peminjaman,
-        ]);
     }
 
     public function historyPeminjamanRuang()
