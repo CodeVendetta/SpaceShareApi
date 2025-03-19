@@ -11,11 +11,6 @@ use Illuminate\Validation\ValidationException;
 
 class PeminjamanBarangController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function create(Request $request)
     {
         DB::beginTransaction();
