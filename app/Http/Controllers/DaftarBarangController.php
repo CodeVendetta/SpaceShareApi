@@ -12,19 +12,27 @@ class DaftarBarangController extends Controller
 {
     public function index()
     {
+        try {
+            if (!Auth::check()) {
+                return response()->json([
+                    'message' => 'Unauthorized, please login first.'
+                ], 401);
+            }
 
-        if (!Auth::check()) {
+            $barang = Barang::with('statusBarang')->get();
+
             return response()->json([
-                'message' => 'Unauthorized, please login first.'
-            ], 401);
+                'message' => 'Daftar barang berhasil diambil',
+                'data' => $barang
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage()
+            ], 500);
         }
-        $barang = Barang::with('statusBarang')->get();
-
-        return response()->json([
-            'message' => 'Daftar barang berhasil diambil',
-            'data' => $barang
-        ]);
     }
+
 
     public function getBarangById($id)
     {
