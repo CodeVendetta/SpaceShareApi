@@ -13,7 +13,7 @@ class DaftarBarangController extends Controller
     public function index()
     {
         try {
-            if (!Auth::check()) {
+            if (!Auth::id()); {
                 return response()->json([
                     'message' => 'Unauthorized, please login first.'
                 ], 401);
