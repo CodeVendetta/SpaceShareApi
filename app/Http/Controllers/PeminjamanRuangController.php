@@ -20,6 +20,18 @@ class PeminjamanRuangController extends Controller
                 'tgl_selesai' => 'required|date|after:tgl_mulai',
             ]);
 
+            if (!$request->filled('tgl_mulai') || !$request->filled('tgl_selesai')) {
+                return response()->json([
+                    'message' => 'Tanggal mulai dan tanggal selesai wajib diisi'
+                ], 400);
+            }
+
+            if (strtotime($request->tgl_mulai) < strtotime(date('Y-m-d'))) {
+                return response()->json([
+                    'message' => 'Tanggal mulai tidak boleh kurang dari hari ini'
+                ], 400);
+            }
+
             $ruang = Ruang::findOrFail($request->ruang_id);
 
             if ($ruang->stok < $request->qty) {
