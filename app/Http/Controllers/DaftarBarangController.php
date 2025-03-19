@@ -5,11 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Auth;
+
 
 class DaftarBarangController extends Controller
 {
     public function index()
     {
+
+        if (!Auth::check()) {
+            return response()->json([
+                'message' => 'Unauthorized, please login first.'
+            ], 401);
+        }
         $barang = Barang::with('statusBarang')->get();
 
         return response()->json([
@@ -43,7 +51,7 @@ class DaftarBarangController extends Controller
         $lastBarang = Barang::latest('id')->first();
         if ($lastBarang) {
             preg_match('/\d+$/', $lastBarang->nomor, $matches);
-            $lastNumber = $matches ? (int)$matches[0] : 0;
+            $lastNumber = $matches ? (int) $matches[0] : 0;
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
