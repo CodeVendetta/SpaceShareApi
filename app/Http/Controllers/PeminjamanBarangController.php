@@ -11,6 +11,11 @@ use Illuminate\Validation\ValidationException;
 
 class PeminjamanBarangController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function create(Request $request)
     {
         DB::beginTransaction();
@@ -87,23 +92,46 @@ class PeminjamanBarangController extends Controller
             'status' => 'required|integer|in:2,5',
         ]);
 
-        $peminjaman = PinjamBarang::where('id', $id)
-            ->where('status', 4)
-            ->first();
+        DB::beginTransaction();
+        try {
+            $peminjaman = PinjamBarang::where('id', $id)
+                ->where('status', 4)
+                ->first();
 
-        if (!$peminjaman) {
-            return response()->json(['message' => 'Pengembalian tidak ditemukan atau sudah diproses'], 404);
+            if (!$peminjaman) {
+                return response()->json(['message' => 'Pengembalian tidak ditemukan atau sudah diproses'], 404);
+            }
+
+            $barang = Barang::findOrFail($peminjaman->barang_id);
+
+            if ($request->status == 5) {
+                $barang->stok += $peminjaman->qty;
+
+                if ($barang->status == 3) {
+                    $barang->status = 1;
+                }
+
+                $barang->save();
+            }
+
+            $peminjaman->update([
+                'status' => $request->status,
+                'is_returned' => $request->status == 5,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => $request->status == 5 ? 'Pengembalian barang berhasil dikonfirmasi' : 'Pengembalian barang ditolak',
+                'data' => $peminjaman,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Terjadi kesalahan',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $peminjaman->update([
-            'status' => $request->status,
-            'is_returned' => $request->status == 5,
-        ]);
-
-        return response()->json([
-            'message' => $request->status == 5 ? 'Pengembalian barang berhasil dikonfirmasi' : 'Pengembalian barang ditolak',
-            'data' => $peminjaman,
-        ]);
     }
 
     public function approveRejectPeminjamanBarang(Request $request, $id)
@@ -112,23 +140,46 @@ class PeminjamanBarangController extends Controller
             'status' => 'required|integer|in:2,3',
         ]);
 
-        $peminjaman = PinjamBarang::where('id', $id)
-            ->where('status', 1)
-            ->first();
+        DB::beginTransaction();
+        try {
+            $peminjaman = PinjamBarang::where('id', $id)
+                ->where('status', 1)
+                ->first();
 
-        if (!$peminjaman) {
-            return response()->json(['message' => 'Peminjaman tidak ditemukan atau sudah diproses'], 404);
+            if (!$peminjaman) {
+                return response()->json(['message' => 'Peminjaman tidak ditemukan atau sudah diproses'], 404);
+            }
+
+            $barang = Barang::findOrFail($peminjaman->barang_id);
+
+            if ($request->status == 3) {
+                $barang->stok += $peminjaman->qty;
+
+                if ($barang->status == 3) {
+                    $barang->status = 1;
+                }
+
+                $barang->save();
+            }
+
+            $peminjaman->update([
+                'status' => $request->status,
+                'admin_id' => Auth::id(),
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => $request->status == 2 ? 'Peminjaman barang disetujui' : 'Peminjaman barang ditolak',
+                'data' => $peminjaman,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Terjadi kesalahan',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $peminjaman->update([
-            'status' => $request->status,
-            'admin_id' => Auth::id(),
-        ]);
-
-        return response()->json([
-            'message' => $request->status == 2 ? 'Peminjaman barang disetujui' : 'Peminjaman barang ditolak',
-            'data' => $peminjaman,
-        ]);
     }
 
     public function historyPeminjamanBarang()
