@@ -6,6 +6,7 @@ use App\Models\PinjamRuang;
 use App\Models\Ruang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PeminjamanRuangController extends Controller
@@ -16,27 +17,18 @@ class PeminjamanRuangController extends Controller
         try {
             $request->validate([
                 'ruang_id' => 'required|exists:ruang,id',
-                'tgl_mulai' => 'required|date|after_or_equal:today',
-                'tgl_selesai' => 'required|date|after:tgl_mulai',
             ]);
 
-            if (!$request->filled('tgl_mulai') || !$request->filled('tgl_selesai')) {
-                return response()->json([
-                    'message' => 'Tanggal mulai dan tanggal selesai wajib diisi'
-                ], 400);
+            if (empty($request->tgl_mulai) || empty($request->tgl_selesai)) {
+                return response()->json(['message' => 'Tanggal tidak boleh kosong'], 400);
             }
 
-            if (strtotime($request->tgl_mulai) < strtotime(date('Y-m-d'))) {
-                return response()->json([
-                    'message' => 'Tanggal mulai tidak boleh kurang dari hari ini'
-                ], 400);
+            $today = now()->format('Y-m-d');
+            if ($request->tgl_mulai < $today || $request->tgl_selesai < $today) {
+                return response()->json(['message' => 'Tanggal tidak boleh kurang dari hari ini'], 400);
             }
 
             $ruang = Ruang::findOrFail($request->ruang_id);
-
-            if ($ruang->stok < $request->qty) {
-                return response()->json(['message' => 'Stok tidak mencukupi'], 400);
-            }
 
             if ($ruang->status != 1) {
                 return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 400);
@@ -48,16 +40,9 @@ class PeminjamanRuangController extends Controller
                 'admin_id' => 1,
                 'tgl_mulai' => $request->tgl_mulai,
                 'tgl_selesai' => $request->tgl_selesai,
-                'qty' => 1,
                 'status' => 1,
                 'is_returned' => false,
             ]);
-
-            $ruang->stok -= $request->qty;
-
-            if ($ruang->stok == 0) {
-                $ruang->status = 3   ;
-            }
 
             $ruang->save();
 

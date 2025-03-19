@@ -17,26 +17,25 @@ class PeminjamanBarangController extends Controller
         try {
             $request->validate([
                 'barang_id' => 'required|exists:barang,id',
-                'tgl_mulai' => 'required|date|after_or_equal:today',
-                'tgl_selesai' => 'required|date|after:tgl_mulai',
             ]);
 
-            if (!$request->filled('tgl_mulai') || !$request->filled('tgl_selesai')) {
-                return response()->json([
-                    'message' => 'Tanggal mulai dan tanggal selesai wajib diisi'
-                ], 400);
+            if (empty($request->tgl_mulai) || empty($request->tgl_selesai)) {
+                return response()->json(['message' => 'Tanggal tidak boleh kosong'], 400);
             }
 
-            if (strtotime($request->tgl_mulai) < strtotime(date('Y-m-d'))) {
-                return response()->json([
-                    'message' => 'Tanggal mulai tidak boleh kurang dari hari ini'
-                ], 400);
+            $today = now()->format('Y-m-d');
+            if ($request->tgl_mulai < $today || $request->tgl_selesai < $today) {
+                return response()->json(['message' => 'Tanggal tidak boleh kurang dari hari ini'], 400);
             }
 
             $barang = Barang::findOrFail($request->barang_id);
 
             if ($barang->stok < $request->qty) {
                 return response()->json(['message' => 'Stok tidak mencukupi'], 400);
+            }
+
+            if ($request->qty < 1) {
+                return response()->json(['message' => 'Jumlah tidak valid'], 400);
             }
 
             if ($barang->status != 1) {
