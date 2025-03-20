@@ -19,9 +19,9 @@ use App\Http\Controllers\PeminjamanBarangController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
 
 Route::prefix('admin')->group(function () {
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
 
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout']);
@@ -43,10 +43,10 @@ Route::prefix('admin')->group(function () {
     });
 });
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::prefix('user')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
 
     Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
