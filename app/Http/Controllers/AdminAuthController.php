@@ -12,7 +12,7 @@ class AdminAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
@@ -20,7 +20,7 @@ class AdminAuthController extends Controller
 
         if (!$admin || !Hash::check($request->password, $admin->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Username atau password salah.'],
+                'email' => ['email atau password salah.'],
             ]);
         }
 
