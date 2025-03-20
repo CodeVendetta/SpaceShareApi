@@ -21,8 +21,6 @@ use App\Http\Controllers\PeminjamanBarangController;
 */
 
 Route::prefix('admin')->group(function () {
-    Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
-
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout']);
         Route::get('/barang', [DaftarBarangController::class, 'index']);
