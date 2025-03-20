@@ -15,9 +15,9 @@ class PeminjamanBarangController extends Controller
     {
         DB::beginTransaction();
         try {
-            $request->validate([
-                'barang_id' => 'required|exists:barang,id',
-            ]);
+            // $request->validate([
+            //     'barang_id' => 'required|exists:barang,id',
+            // ]);
 
             $today = now()->format('Y-m-d');
             
