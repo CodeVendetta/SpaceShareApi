@@ -27,7 +27,11 @@ Route::prefix('admin')->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout']);
         Route::get('/barang', [DaftarBarangController::class, 'index']);
         Route::get('/ruang', [DaftarRuangController::class, 'index']);
-        Route::get('/dashboard', [DashboardAdminController::class, 'index']);
+        Route::get('/barang/count', [DaftarBarangController::class, 'countBarang']);
+        Route::get('/ruang/count', [DaftarRuangController::class, 'countRuang']);
+        Route::get('/users', [DashboardAdminController::class, 'index']);
+        Route::get('/barang-dipinjam', [DashboardAdminController::class, 'allBarangDipinjam']);
+        Route::get('/ruang-dipinjam', [DashboardAdminController::class, 'allRuangDipinjam']);
         Route::get('/barang/{id}', [DaftarBarangController::class, 'getBarangById']);
         Route::post('/barang/store', [DaftarBarangController::class, 'store']);
         Route::post('/ruang/store', [DaftarRuangController::class, 'store']);

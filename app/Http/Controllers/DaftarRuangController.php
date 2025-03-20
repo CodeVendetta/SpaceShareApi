@@ -18,6 +18,23 @@ class DaftarRuangController extends Controller
         ]);
     }
 
+    public function countRuang()
+    {
+        try {
+            $totalRuang = Ruang::count();
+
+            return response()->json([
+                'message' => 'Total jumlah ruang berhasil diambil',
+                'total_ruang' => $totalRuang
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function getRuangById($id)
     {
         $ruangbyid = Ruang::get()->where('id', $id)->first();
