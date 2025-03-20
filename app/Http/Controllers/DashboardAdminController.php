@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\PinjamBarang;
+use App\Models\PinjamRuang;
 
 class DashboardAdminController extends Controller
 {
@@ -15,7 +17,7 @@ class DashboardAdminController extends Controller
             'data' => $user
         ]);
     }
-    
+
     public function allBarangDipinjam()
     {
         $barangDipinjam = PinjamBarang::whereIn('status', [1, 2])
