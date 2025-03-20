@@ -18,30 +18,58 @@ class DashboardAdminController extends Controller
         ]);
     }
 
-    public function allBarangDipinjam()
+    public function barangDipinjamPerUser()
     {
         $barangDipinjam = PinjamBarang::whereIn('status', [1, 2])
             ->with(['barang', 'user'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->groupBy('user_id')
+            ->map(function ($items, $userId) {
+                return [
+                    'user' => $items->first()->user,
+                    'total_barang_dipinjam' => $items->count(),
+                    'detail' => $items
+                ];
+            })
+            ->values();
 
         return response()->json([
-            'message' => 'Data semua barang yang sedang dipinjam berhasil diambil',
+            'message' => 'Data jumlah barang yang sedang dipinjam per user berhasil diambil',
             'data' => $barangDipinjam
         ]);
     }
 
-    public function allRuangDipinjam()
+    public function ruangDipinjamPerUser()
     {
-        $ruangDipinjam = PinjamRuang::whereIn('status', [1, 2]) 
+        $ruangDipinjam = PinjamRuang::whereIn('status', [1, 2])
             ->with(['ruang', 'user'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->groupBy('user_id')
+            ->map(function ($items, $userId) {
+                return [
+                    'user' => $items->first()->user,
+                    'total_ruang_dipinjam' => $items->count(),
+                    'detail' => $items
+                ];
+            })
+            ->values();
 
         return response()->json([
-            'message' => 'Data semua ruang yang sedang dipinjam berhasil diambil',
+            'message' => 'Data jumlah ruang yang sedang dipinjam per user berhasil diambil',
             'data' => $ruangDipinjam
         ]);
     }
-}
 
+    public function totalDipinjam()
+    {
+        $totalBarangDipinjam = PinjamBarang::whereIn('status', [1, 2])->count();
+        $totalRuangDipinjam = PinjamRuang::whereIn('status', [1, 2])->count();
+
+        return response()->json([
+            'message' => 'Total barang dan ruang yang sedang dipinjam berhasil dihitung',
+            'total_barang_dipinjam' => $totalBarangDipinjam,
+            'total_ruang_dipinjam' => $totalRuangDipinjam,
+            'total_semua' => $totalBarangDipinjam + $totalRuangDipinjam
+        ]);
+    }
+}
