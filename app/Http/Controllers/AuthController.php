@@ -49,6 +49,32 @@ class AuthController extends Controller
     }
 
 
+    // public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'password' => 'required',
+    //     ]);
+
+    //     $user = User::where('email', $request->email)->first();
+
+    //     if (!$user || !Hash::check($request->password, $user->password)) {
+    //         throw ValidationException::withMessages([
+    //             'email' => ['Email atau password salah.'],
+    //         ]);
+    //     }
+
+    //     $user->tokens()->delete();
+
+    //     $token = $user->createToken('auth_token')->plainTextToken;
+
+    //     return response()->json([
+    //         'message' => 'Login berhasil',
+    //         'user' => $user,
+    //         'token' => $token,
+    //     ]);
+    // }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -56,24 +82,22 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Email atau password salah.'],
-            ]);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
         }
 
-        $user->tokens()->delete();
-
+        $user = Auth::user();
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login berhasil',
-            'user' => $user,
+            'message' => 'Login successful',
             'token' => $token,
-        ]);
+            'user' => $user
+        ], 200);
     }
+
 
     public function logout(Request $request)
     {
