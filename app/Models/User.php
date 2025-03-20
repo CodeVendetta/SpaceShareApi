@@ -24,6 +24,7 @@ class User extends Authenticatable
         'nim',
         'prodi',
         'foto',
+        'role',
     ];
 
     /**
