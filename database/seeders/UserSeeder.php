@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
             'foto' => 'blablabla.jpg',
             'email' => 'user1@email.com',
             'password' => bcrypt('password'),
+            'role' => 'user',
         ]);
         FacadesDB::table('users')->insert([
             'nama' => 'Azril cengo',
@@ -28,6 +29,7 @@ class UserSeeder extends Seeder
             'foto' => 'blablabla.jpg',
             'email' => 'user2@email.com',
             'password' => bcrypt('password'),
+            'role' => 'user',
         ]);
     }
 }

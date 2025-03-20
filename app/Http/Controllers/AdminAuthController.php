@@ -12,15 +12,15 @@ class AdminAuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'username' => 'required',
+            'email' => 'required',
             'password' => 'required',
         ]);
 
-        $admin = Admin::where('username', $request->username)->first();
+        $admin = Admin::where('email', $request->email)->first();
 
         if (!$admin || !Hash::check($request->password, $admin->password)) {
             throw ValidationException::withMessages([
-                'username' => ['Username atau password salah.'],
+                'email' => ['Username atau password salah.'],
             ]);
         }
 

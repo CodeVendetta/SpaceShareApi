@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('foto')->nullable();
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('role');
             $table->timestamps();
         });
     }

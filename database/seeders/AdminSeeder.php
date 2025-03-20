@@ -16,6 +16,7 @@ class AdminSeeder extends Seeder
         FacadesDB::table('admin')->insert([
             'email' => 'admin123@gmail.com',
             'password' => bcrypt('QWEASDZXC31@'),
+            'role' => 'admin',
         ]);
     }
 }

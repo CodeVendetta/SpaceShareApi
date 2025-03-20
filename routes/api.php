@@ -23,7 +23,7 @@ use App\Http\Controllers\PeminjamanBarangController;
 Route::prefix('admin')->group(function () {
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login');
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout']);
         Route::get('/barang', [DaftarBarangController::class, 'index']);
         Route::get('/ruang', [DaftarRuangController::class, 'index']);
@@ -47,7 +47,7 @@ Route::prefix('user')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/barang', [DaftarBarangController::class, 'index']);
         Route::get('/ruang', [DaftarRuangController::class, 'index']);
