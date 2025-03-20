@@ -28,14 +28,14 @@ class PeminjamanRuangController extends Controller
                 return response()->json(['message' => 'Tanggal tidak boleh kurang dari hari ini'], 400);
             }
 
+            if ($request->ruang_id <= 0) {
+                return response()->json(['message' => 'Ruang tidak valid/tidak ada'], 404);
+            }
+
             $ruang = Ruang::findOrFail($request->ruang_id);
 
             if ($ruang->status != 1) {
                 return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 400);
-            }
-
-            if ($ruang->id <= 0) {
-                return response()->json(['message' => 'Ruang tidak valid/tidak ada'], 404);
             }
 
             $peminjaman = PinjamRuang::create([

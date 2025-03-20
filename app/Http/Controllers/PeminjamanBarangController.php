@@ -37,15 +37,16 @@ class PeminjamanBarangController extends Controller
                 return response()->json(['message' => 'Tanggal tidak boleh kurang dari hari ini'], 400);
             }
 
+            if ($request->barang_id <= 0) {
+                return response()->json(['message' => 'Barang tidak valid/tidak ada'], 404);
+            }
+
             $barang = Barang::findOrFail($request->barang_id);
 
             if ($barang->stok < $request->qty) {
                 return response()->json(['message' => 'Stok tidak mencukupi'], 400);
             }
 
-            if ($barang->id <= 0) {
-                return response()->json(['message' => 'Barang tidak valid/tidak ada'], 404);
-            }
 
             if ($request->qty < 1) {
                 return response()->json(['message' => 'Jumlah tidak valid'], 400);
