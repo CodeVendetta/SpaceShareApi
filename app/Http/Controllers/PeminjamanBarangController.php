@@ -19,11 +19,20 @@ class PeminjamanBarangController extends Controller
                 'barang_id' => 'required|exists:barang,id',
             ]);
 
+            $today = now()->format('Y-m-d');
+            
+            if ($request->tgl_mulai < $today || $request->tgl_selesai < $today && $request->qty < 1) {
+                return response()->json(['message' => 'Tanggal tidak boleh kurang dari hari ini dan Jumlah tidak valid'], 400);
+            }
+
+            if (empty($request->tgl_mulai) || empty($request->tgl_selesai) && $request->qty < 1) {
+                return response()->json(['message' => 'Tanggal tidak boleh kosong dan Jumlah tidak valid'], 400);
+            }
+
             if (empty($request->tgl_mulai) || empty($request->tgl_selesai)) {
                 return response()->json(['message' => 'Tanggal tidak boleh kosong'], 400);
             }
 
-            $today = now()->format('Y-m-d');
             if ($request->tgl_mulai < $today || $request->tgl_selesai < $today) {
                 return response()->json(['message' => 'Tanggal tidak boleh kurang dari hari ini'], 400);
             }
@@ -32,6 +41,10 @@ class PeminjamanBarangController extends Controller
 
             if ($barang->stok < $request->qty) {
                 return response()->json(['message' => 'Stok tidak mencukupi'], 400);
+            }
+
+            if ($barang->id <= 0) {
+                return response()->json(['message' => 'Barang tidak valid/tidak ada'], 404);
             }
 
             if ($request->qty < 1) {

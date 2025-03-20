@@ -34,6 +34,10 @@ class PeminjamanRuangController extends Controller
                 return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 400);
             }
 
+            if ($ruang->id <= 0) {
+                return response()->json(['message' => 'Ruang tidak valid/tidak ada'], 404);
+            }
+
             $peminjaman = PinjamRuang::create([
                 'ruang_id' => $request->ruang_id,
                 'user_id' => Auth::id(),
