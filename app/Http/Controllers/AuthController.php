@@ -81,23 +81,26 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
-        if (!Auth::attempt($request->only('email', 'password'))) {
+    
+        $user = User::where('email', $request->email)->first();
+    
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Email atau password salah'
             ], 401);
         }
-
-        $user = Auth::user();
+    
+        $user->tokens()->delete();
+    
         $token = $user->createToken('auth_token')->plainTextToken;
-
+    
         return response()->json([
-            'message' => 'Login successful',
+            'message' => 'Login berhasil',
             'token' => $token,
             'user' => $user
         ], 200);
     }
-
+    
 
     public function logout(Request $request)
     {
