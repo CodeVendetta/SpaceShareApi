@@ -14,8 +14,8 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         FacadesDB::table('admin')->insert([
-            'username' => 'admin',
-            'password' => bcrypt('password'),
+            'email' => 'admin123@gmail.com',
+            'password' => bcrypt('QWEASDZXC31@'),
         ]);
     }
 }
