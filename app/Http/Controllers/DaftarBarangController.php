@@ -33,6 +33,22 @@ class DaftarBarangController extends Controller
         }
     }
 
+    public function countBarang()
+    {
+        try {
+            $totalBarang = Barang::count();
+
+            return response()->json([
+                'message' => 'Total jumlah barang berhasil diambil',
+                'total_barang' => $totalBarang
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function getBarangById($id)
     {
