@@ -23,7 +23,6 @@ class User extends Authenticatable
         'nama',
         'nim',
         'prodi',
-        'foto',
         'role',
     ];
 

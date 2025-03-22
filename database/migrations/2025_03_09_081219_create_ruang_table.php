@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('nama');
             $table->foreignId('status')->constrained('status_ruang')->onDelete('cascade');
             $table->string('foto')->nullable();
-            $table->string('lokasi');
             $table->timestamps();
         });
     }

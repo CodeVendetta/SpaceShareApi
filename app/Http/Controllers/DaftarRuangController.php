@@ -50,7 +50,6 @@ class DaftarRuangController extends Controller
             'nama' => 'required|string',
             'status' => 'required|exists:status_ruang,id',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'lokasi' => 'nullable|string',
         ]);
 
         $data = $request->all();

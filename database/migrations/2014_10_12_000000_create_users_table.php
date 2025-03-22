@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('nama');
             $table->string('nim')->unique();
             $table->string('prodi');
-            $table->string('foto')->nullable();
             $table->string('email')->unique();
             $table->string('password');
             $table->string('role');
