@@ -35,7 +35,7 @@ class DashboardAdminController extends Controller
                         return [
                             'barang_id' => $item->barang->id,
                             'nama_barang' => $item->barang->nama,
-                            'status_peminjaman' => $item->statusPeminjaman->nama_status ?? 'Tidak diketahui',
+                            'status_peminjaman' => $item->statusPeminjaman->nama ?? 'Tidak diketahui',
                             'tgl_mulai' => $item->tgl_mulai,
                             'tgl_selesai' => $item->tgl_selesai,
                             'qty' => $item->qty,
@@ -66,7 +66,7 @@ class DashboardAdminController extends Controller
                         return [
                             'ruang_id' => $item->ruang->id,
                             'nama_ruang' => $item->ruang->nama,
-                            'status_peminjaman' => $item->statusPeminjaman->nama_status ?? 'Tidak diketahui',
+                            'status_peminjaman' => $item->statusPeminjaman->nama ?? 'Tidak diketahui',
                             'tgl_mulai' => $item->tgl_mulai,
                             'tgl_selesai' => $item->tgl_selesai,
                             'is_returned' => $item->is_returned,
@@ -93,7 +93,7 @@ class DashboardAdminController extends Controller
                     'user' => $item->user,
                     'jenis' => 'barang',
                     'nama' => $item->barang->nama,
-                    'status_peminjaman' => $item->statusPeminjaman->nama_status ?? 'Tidak diketahui', 
+                    'status_peminjaman' => $item->statusPeminjaman->nama ?? 'Tidak diketahui', 
                     'detail' => $item
                 ];
             });
@@ -107,7 +107,7 @@ class DashboardAdminController extends Controller
                     'user' => $item->user,
                     'jenis' => 'ruang',
                     'nama' => $item->ruang->nama,
-                    'status_peminjaman' => $item->statusPeminjaman->nama_status ?? 'Tidak diketahui', 
+                    'status_peminjaman' => $item->statusPeminjaman->nama ?? 'Tidak diketahui', 
                     'detail' => $item
                 ];
             });
@@ -151,9 +151,9 @@ class DashboardAdminController extends Controller
 
     public function getStatus()
     {
-        $statusBarang = StatusBarang::all(['id', 'nama_status']);
-        $statusRuang = StatusRuang::all(['id', 'nama_status']);
-        $statusPeminjaman = StatusPeminjaman::all(['id', 'nama_status']);
+        $statusBarang = StatusBarang::all(['id', 'nama']);
+        $statusRuang = StatusRuang::all(['id', 'nama']);
+        $statusPeminjaman = StatusPeminjaman::all(['id', 'nama']);
 
         return response()->json([
             'message' => 'Data status berhasil diambil',
