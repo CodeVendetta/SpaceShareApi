@@ -23,7 +23,7 @@ class DashboardAdminController extends Controller
 
     public function barangDipinjamPerUser()
     {
-        $barangDipinjam = PinjamBarang::whereIn('status', [1, 2])
+        $barangDipinjam = PinjamBarang::whereIn('status', [1, 2, 3, 4, 5])
             ->with(['barang', 'user', 'statusPeminjaman'])
             ->get()
             ->groupBy('user_id')
@@ -54,7 +54,7 @@ class DashboardAdminController extends Controller
     
     public function ruangDipinjamPerUser()
     {
-        $ruangDipinjam = PinjamRuang::whereIn('status', [1, 2])
+        $ruangDipinjam = PinjamRuang::whereIn('status', [1, 2, 3, 4, 5])
             ->with(['ruang', 'user', 'statusPeminjaman'])
             ->get()
             ->groupBy('user_id')
@@ -84,7 +84,7 @@ class DashboardAdminController extends Controller
     
     public function barangDanRuangDipinjamPerUser()
     {
-        $barangDipinjam = PinjamBarang::whereIn('status', [1, 2])
+        $barangDipinjam = PinjamBarang::whereIn('status', [1, 2, 3, 4, 5])
             ->with(['barang', 'user', 'statusPeminjaman']) 
             ->get()
             ->map(function ($item) {
@@ -98,7 +98,7 @@ class DashboardAdminController extends Controller
                 ];
             });
     
-        $ruangDipinjam = PinjamRuang::whereIn('status', [1, 2])
+        $ruangDipinjam = PinjamRuang::whereIn('status', [1, 2, 3, 4, 5])
             ->with(['ruang', 'user', 'statusPeminjaman']) 
             ->get()
             ->map(function ($item) {
