@@ -47,8 +47,8 @@ class DashboardAdminController extends Controller
             ->values();
     
         return response()->json([
-            'message' => 'Data jumlah ruang yang sedang dipinjam per user berhasil diambil',
-            'data' => $ruangDipinjam
+            'message' => 'Data jumlah barang yang sedang dipinjam per user berhasil diambil',
+            'data' => $barangDipinjam
         ]);
     }
     
