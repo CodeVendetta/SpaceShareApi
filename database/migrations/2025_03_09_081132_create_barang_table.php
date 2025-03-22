@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('stok');
             $table->foreignId('status')->constrained('status_barang')->onDelete('cascade');
             $table->string('foto')->nullable();
-            $table->string('lokasi');
             $table->timestamps();
         });
     }

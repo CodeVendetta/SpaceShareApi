@@ -66,7 +66,6 @@ class DaftarBarangController extends Controller
             'stok' => 'required|integer|min:1',
             'status' => 'required|exists:status_barang,id',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'lokasi' => 'nullable|string',
         ]);
 
         $data = $request->all();
