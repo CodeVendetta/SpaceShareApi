@@ -33,6 +33,7 @@ class DashboardAdminController extends Controller
                     'total_barang_dipinjam' => $items->count(),
                     'detail' => $items->map(function ($item) {
                         return [
+                            'id_peminjaman' => $item->id,
                             'barang_id' => $item->barang->id,
                             'nama_barang' => $item->barang->nama,
                             'status_peminjaman' => $item->statusPeminjaman->nama ?? 'Tidak diketahui',
@@ -64,6 +65,7 @@ class DashboardAdminController extends Controller
                     'total_ruang_dipinjam' => $items->count(),
                     'detail' => $items->map(function ($item) {
                         return [
+                            'id_peminjaman' => $item->id,
                             'ruang_id' => $item->ruang->id,
                             'nama_ruang' => $item->ruang->nama,
                             'status_peminjaman' => $item->statusPeminjaman->nama ?? 'Tidak diketahui',
@@ -94,7 +96,15 @@ class DashboardAdminController extends Controller
                     'jenis' => 'barang',
                     'nama' => $item->barang->nama,
                     'status_peminjaman' => $item->statusPeminjaman->nama ?? 'Tidak diketahui', 
-                    'detail' => $item
+                    'detail' => [
+                        'id_peminjaman' => $item->id,
+                        'barang_id' => $item->barang->id,
+                        'nama_barang' => $item->barang->nama,
+                        'tgl_mulai' => $item->tgl_mulai,
+                        'tgl_selesai' => $item->tgl_selesai,
+                        'qty' => $item->qty,
+                        'is_returned' => $item->is_returned,
+                    ]
                 ];
             });
     
@@ -108,7 +118,14 @@ class DashboardAdminController extends Controller
                     'jenis' => 'ruang',
                     'nama' => $item->ruang->nama,
                     'status_peminjaman' => $item->statusPeminjaman->nama ?? 'Tidak diketahui', 
-                    'detail' => $item
+                    'detail' => [
+                        'id_peminjaman' => $item->id, 
+                        'ruang_id' => $item->ruang->id,
+                        'nama_ruang' => $item->ruang->nama,
+                        'tgl_mulai' => $item->tgl_mulai,
+                        'tgl_selesai' => $item->tgl_selesai,
+                        'is_returned' => $item->is_returned,
+                    ]
                 ];
             });
     
