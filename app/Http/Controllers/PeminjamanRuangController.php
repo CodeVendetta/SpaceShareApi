@@ -102,12 +102,7 @@ class PeminjamanRuangController extends Controller
             $ruang = Ruang::findOrFail($peminjaman->ruang_id);
 
             if ($request->status == 5) {
-                $ruang->stok += $peminjaman->qty;
-
-                if ($ruang->status == 3) {
-                    $ruang->status = 1;
-                }
-
+                $ruang->status = 1; 
                 $ruang->save();
             }
 
@@ -149,13 +144,8 @@ class PeminjamanRuangController extends Controller
 
             $ruang = Ruang::findOrFail($peminjaman->ruang_id);
 
-            if ($request->status == 3) {
-                $ruang->stok += $peminjaman->qty;
-
-                if ($ruang->status == 3) {
-                    $ruang->status = 1;
-                }
-
+            if ($request->status == 2) {
+                $ruang->status = 2; 
                 $ruang->save();
             }
 
