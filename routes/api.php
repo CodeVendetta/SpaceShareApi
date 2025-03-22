@@ -31,6 +31,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/ruang/count', [DaftarRuangController::class, 'countRuang']);
         Route::get('/users', [DashboardAdminController::class, 'index']);
         Route::get('/barang-dipinjam', [DashboardAdminController::class, 'barangDipinjamPerUser']);
+        Route::get('/barang-ruang-dipinjam', [DashboardAdminController::class, 'barangDanRuangDipinjamPerUser']);
         Route::get('/ruang-dipinjam', [DashboardAdminController::class, 'ruangDipinjamPerUser']);
         Route::get('/barang/{id}', [DaftarBarangController::class, 'getBarangById']);
         Route::post('/barang/store', [DaftarBarangController::class, 'store']);
