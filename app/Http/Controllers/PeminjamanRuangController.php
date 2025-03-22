@@ -15,10 +15,6 @@ class PeminjamanRuangController extends Controller
     {
         DB::beginTransaction();
         try {
-            // $request->validate([
-            //     'ruang_id' => 'required|exists:ruang,id',
-            // ]);
-
             if (empty($request->tgl_mulai) || empty($request->tgl_selesai)) {
                 return response()->json(['message' => 'Tanggal tidak boleh kosong'], 400);
             }
