@@ -45,7 +45,7 @@ class PeminjamanBarangController extends Controller
 
             $jumlah_barang = $barang->stok
 
-            if ($barang->stok < $request->qty) {
+            if ($jumlah_barang < $request->qty) {
                 return response()->json(['message' => 'Stok tidak mencukupi'], 400);
             }
 
