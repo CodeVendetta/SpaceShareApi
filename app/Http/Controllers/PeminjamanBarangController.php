@@ -62,12 +62,22 @@ class PeminjamanBarangController extends Controller
                         ->orWhereBetween('tgl_selesai', [$request->tgl_mulai, $request->tgl_selesai])
                         ->orWhere(function ($query) use ($request) {
                             $query->where('tgl_mulai', '<=', $request->tgl_mulai)
-                                    ->where('tgl_selesai', '>=', $request->tgl_selesai);
+                                ->where('tgl_selesai', '>=', $request->tgl_selesai);
                         });
                 })
                 ->sum('qty');
 
-            $availableStock = $barang->stok - $existingPeminjaman;
+            $returnedStock = PinjamBarang::where('barang_id', $request->barang_id)
+                ->where('status', 5) 
+                ->whereBetween('tgl_selesai', [$request->tgl_mulai, $request->tgl_selesai])
+                ->sum('qty');
+
+            $rejectedStock = PinjamBarang::where('barang_id', $request->barang_id)
+                ->where('status', 3)
+                ->whereBetween('tgl_mulai', [$request->tgl_mulai, $request->tgl_selesai])
+                ->sum('qty');
+
+            $availableStock = ($barang->stok - $existingPeminjaman) + $returnedStock + $rejectedStock;
 
             if ($availableStock < $request->qty) {
                 return response()->json(['message' => 'Stok barang tidak mencukupi untuk tanggal yang dipilih'], 400);
