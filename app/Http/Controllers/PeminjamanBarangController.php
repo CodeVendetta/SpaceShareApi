@@ -80,7 +80,11 @@ class PeminjamanBarangController extends Controller
             $availableStock = ($barang->stok - $existingPeminjaman) + $returnedStock + $rejectedStock;
 
             if ($availableStock < $request->qty) {
-                return response()->json(['message' => existingPeminjaman], 400);
+                return response()->json([
+                    'message' => 'Stok barang tidak mencukupi untuk tanggal yang dipilih',
+                    'existingPeminjaman' => $existingPeminjaman,
+                    'availableStock' => $availableStock
+                ], 400);
             }
 
             $peminjaman = PinjamBarang::create([
