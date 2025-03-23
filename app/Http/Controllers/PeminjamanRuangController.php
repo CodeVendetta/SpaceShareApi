@@ -34,6 +34,22 @@ class PeminjamanRuangController extends Controller
                 return response()->json(['message' => 'Ruang tidak tersedia untuk dipinjam'], 400);
             }
 
+            $conflict = PinjamRuang::where('ruang_id', $request->ruang_id)
+                ->whereIn('status', [1, 2]) 
+                ->where(function ($query) use ($request) {
+                    $query->whereBetween('tgl_mulai', [$request->tgl_mulai, $request->tgl_selesai])
+                        ->orWhereBetween('tgl_selesai', [$request->tgl_mulai, $request->tgl_selesai])
+                        ->orWhere(function ($query) use ($request) {
+                            $query->where('tgl_mulai', '<=', $request->tgl_mulai)
+                                ->where('tgl_selesai', '>=', $request->tgl_selesai);
+                        });
+                })
+                ->exists();
+
+            if ($conflict) {
+                return response()->json(['message' => 'Ruang sudah dibooking pada tanggal tersebut, silakan pilih tanggal lain'], 400);
+            }
+
             $peminjaman = PinjamRuang::create([
                 'ruang_id' => $request->ruang_id,
                 'user_id' => Auth::id(),

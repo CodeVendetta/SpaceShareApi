@@ -47,13 +47,30 @@ class PeminjamanBarangController extends Controller
                 return response()->json(['message' => 'Stok tidak mencukupi'], 400);
             }
 
-
             if ($request->qty < 1) {
                 return response()->json(['message' => 'Jumlah tidak valid'], 400);
             }
 
             if ($barang->status != 1) {
                 return response()->json(['message' => 'Barang tidak tersedia untuk dipinjam'], 400);
+            }
+
+            $existingPeminjaman = PinjamBarang::where('barang_id', $request->barang_id)
+                ->whereIn('status', [1, 2]) 
+                ->where(function ($query) use ($request) {
+                    $query->whereBetween('tgl_mulai', [$request->tgl_mulai, $request->tgl_selesai])
+                        ->orWhereBetween('tgl_selesai', [$request->tgl_mulai, $request->tgl_selesai])
+                        ->orWhere(function ($query) use ($request) {
+                            $query->where('tgl_mulai', '<=', $request->tgl_mulai)
+                                    ->where('tgl_selesai', '>=', $request->tgl_selesai);
+                        });
+                })
+                ->sum('qty');
+
+            $availableStock = $barang->stok - $existingPeminjaman;
+
+            if ($availableStock < $request->qty) {
+                return response()->json(['message' => 'Stok barang tidak mencukupi untuk tanggal yang dipilih'], 400);
             }
 
             $peminjaman = PinjamBarang::create([
