@@ -54,32 +54,48 @@ class PeminjamanBarangController extends Controller
             if ($barang->status != 1) {
                 return response()->json(['message' => 'Barang tidak tersedia untuk dipinjam'], 400);
             }
-            
-            $peminjaman = PinjamBarang::create([
-                'barang_id' => $request->barang_id,
-                'user_id' => Auth::id(),
-                'admin_id' => 1,
-                'tgl_mulai' => $request->tgl_mulai,
-                'tgl_selesai' => $request->tgl_selesai,
-                'qty' => $request->qty,
-                'status' => 1,
-                'is_returned' => false,
-            ]);
 
-            $barang->stok -= $request->qty;
-
-            if ($barang->stok == 0) {
-                $barang->status = 3;
+            if ($barang->stok >= $request->qty) {
+                $peminjaman = PinjamBarang::create([
+                    'barang_id' => $request->barang_id,
+                    'user_id' => Auth::id(),
+                    'admin_id' => 1,
+                    'tgl_mulai' => $request->tgl_mulai,
+                    'tgl_selesai' => $request->tgl_selesai,
+                    'qty' => $request->qty,
+                    'status' => 1,
+                    'is_returned' => false,
+                ]);
+    
+                $barang->stok -= $request->qty;
+                if ($barang->stok == 0) {
+                    $barang->status = 3; 
+                }
+                $barang->save();
+    
+                DB::commit();
+                return response()->json([
+                    'message' => 'Peminjaman barang berhasil diajukan, menunggu persetujuan admin',
+                    'data' => $peminjaman,
+                ], 201);
             }
-
-            $barang->save();
-
-            DB::commit();
-
-            return response()->json([
-                'message' => 'Peminjaman barang berhasil diajukan, menunggu persetujuan admin',
-                'data' => $peminjaman,
-            ], 201);
+    
+            $pengembalianTerdekat = PinjamBarang::where('barang_id', $request->barang_id)
+                ->where('status', 1)
+                ->where('qty', '>=', $request->qty) 
+                ->orderBy('tgl_selesai', 'asc')
+                ->first();
+    
+            if ($pengembalianTerdekat) {
+                return response()->json([
+                    'message' => 'Stok barang habis. Anda bisa membooking barang untuk tanggal berikutnya.',
+                    'tanggal_tersedia' => $pengembalianTerdekat->tgl_selesai,
+                    'qty_dikembalikan' => $pengembalianTerdekat->qty
+                ], 400);
+            }
+    
+            return response()->json(['message' => 'Stok barang tidak tersedia untuk dipinjam saat ini'], 400);
+    
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
