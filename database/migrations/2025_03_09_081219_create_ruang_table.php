@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('admin_id')->constrained('admin')->onDelete('cascade');
             $table->string('nomor')->unique();
-            $table->string('nama');
+            $table->string('nama')->unique();
             $table->foreignId('status')->constrained('status_ruang')->onDelete('cascade');
             $table->string('foto')->nullable();
             $table->timestamps();

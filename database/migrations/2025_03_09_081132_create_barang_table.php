@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('admin_id')->constrained('admin')->onDelete('cascade');
             $table->string('nomor')->unique();
-            $table->string('nama');
+            $table->string('nama')->unique();
             $table->integer('stok');
             $table->foreignId('status')->constrained('status_barang')->onDelete('cascade');
             $table->string('foto')->nullable();
