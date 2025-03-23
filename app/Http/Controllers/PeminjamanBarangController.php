@@ -77,12 +77,14 @@ class PeminjamanBarangController extends Controller
                 ->whereBetween('tgl_mulai', [$request->tgl_mulai, $request->tgl_selesai])
                 ->sum('qty');
 
-            $availableStock = ($barang->stok - $existingPeminjaman) + $returnedStock + $rejectedStock;
+            $availableStock = $barang->stok - ($existingPeminjaman - $returnedStock - $rejectedStock);
 
             if ($availableStock < $request->qty) {
                 return response()->json([
                     'message' => 'Stok barang tidak mencukupi untuk tanggal yang dipilih',
                     'existingPeminjaman' => $existingPeminjaman,
+                    'returnedStock' => $returnedStock,
+                    'rejectedStock' => $rejectedStock,
                     'availableStock' => $availableStock
                 ], 400);
             }
