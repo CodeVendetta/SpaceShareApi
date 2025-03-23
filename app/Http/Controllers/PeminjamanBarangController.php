@@ -43,6 +43,8 @@ class PeminjamanBarangController extends Controller
 
             $barang = Barang::findOrFail($request->barang_id);
 
+            $jumlah_barang = $barang->stok
+
             if ($barang->stok < $request->qty) {
                 return response()->json(['message' => 'Stok tidak mencukupi'], 400);
             }
@@ -77,12 +79,13 @@ class PeminjamanBarangController extends Controller
                 ->whereBetween('tgl_mulai', [$request->tgl_mulai, $request->tgl_selesai])
                 ->sum('qty');
 
-            $availableStock = $barang->stok - ($existingPeminjaman - $returnedStock - $rejectedStock);
+            $availableStock = $jumlah_barang - ($existingPeminjaman - $returnedStock - $rejectedStock);
 
             if ($availableStock < $request->qty) {
                 return response()->json([
                     'message' => 'Stok barang tidak mencukupi untuk tanggal yang dipilih',
                     'existingPeminjaman' => $existingPeminjaman,
+                    'jumlah barang' => $jumlah_barang,
                     'returnedStock' => $returnedStock,
                     'rejectedStock' => $rejectedStock,
                     'availableStock' => $availableStock
